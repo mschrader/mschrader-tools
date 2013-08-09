@@ -120,7 +120,17 @@ while (1) {
                             my $status = $1;
                             $status =~ s/^\s*//g;
                             $status =~ s/\s*$//g;
-                            printf("%-40s %-20s %22s%s\n", $curStatus, $groupStr, $status, ($flagGroup ? " *** " . ($curStatus =~ /REPORT/ ? "YOU MUST GO IN" : ($curStatus =~ /LATER/ ? "STILL ONCALL" : "UNKNOWN")) . " ***": ""));
+                            my $msg = "UNKNOWN";
+                            if ($curStatus =~ /REPORT/) {
+                                $msg = "YOU MUST GO IN";
+                            } elsif ($curStatus =~ /LATER/) {
+                                if ($status =~ /Thank you|You are excused/) {
+                                    $msg = "YOU ARE EXCUSED";
+                                } else {
+                                    $msg = "STILL ONCALL";
+                                }
+                            }
+                            printf("%-40s %-20s %-22s%s\n", $curStatus, $groupStr, $status, ($flagGroup ? " *** $msg ***" : ""));
                         }
                         $foundGroups = undef;
                         $groupStr = undef;
