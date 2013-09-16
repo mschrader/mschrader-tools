@@ -53,6 +53,8 @@ while (1) {
     my $content;
     eval {
         $content = get($opts{url});
+        # to debug html so you don't have to fetch it over and over...
+        # $content = `cat /tmp/newSrc.html`;
     };
     alarm(0);
     if ($@ || $timedOut) {
@@ -116,10 +118,14 @@ while (1) {
                             }
                         }
                     } elsif (/td class="two"\s*>([^<]+)</) {
-                        unless ($groupStr =~ /nbsp/ && /nbsp/) {
-                            my $status = $1;
+                        print "";
+                        my $status = $1;
+                        if (($groupStr =~ /nbsp/ && /nbsp/) || $status =~ /^\s*:\s*$/) {
+                            $status = undef;
+                        } else {
                             $status =~ s/^\s*//g;
                             $status =~ s/\s*$//g;
+                            $status =~ s/^\.//g;
                             my $msg = "UNKNOWN";
                             if ($curStatus =~ /REPORT/) {
                                 $msg = "YOU MUST GO IN";
